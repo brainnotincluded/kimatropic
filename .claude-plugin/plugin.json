@@ -1,0 +1,8 @@
+{
+  "name": "kimatropic",
+  "description": "Delegate tasks to Kimi K2.5 via subagents with lossy summary compression. Supports implementation, research, vision, and swarm delegation modes.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Daniil"
+  }
+}
