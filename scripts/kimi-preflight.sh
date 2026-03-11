@@ -49,5 +49,5 @@ if [ ${#errors[@]} -gt 0 ]; then
   exit 1
 fi
 
-echo "Preflight OK"
+echo "Preflight OK" >&2
 exit 0

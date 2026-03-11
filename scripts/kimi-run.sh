@@ -68,7 +68,7 @@ TAC_CMD=$(command -v tac 2>/dev/null || command -v gtac 2>/dev/null || echo "")
 
 # Run preflight (skip in dry-run mode)
 if [ "$DRY_RUN" = false ]; then
-  "$SCRIPT_DIR/kimi-preflight.sh" || exit 1
+  "$SCRIPT_DIR/kimi-preflight.sh" >&2 || exit 1
 fi
 
 # Setup worktree if --branch specified (before building command)
@@ -203,7 +203,8 @@ if [ -z "$SUMMARY" ] && [ "$STATUS" = "success" ]; then
 fi
 
 # Extract warnings from kimi output
-WARNINGS=$(grep -iE '(TODO|FIXME|WARN|WARNING)' "$KIMI_OUTPUT" 2>/dev/null | head -5 | jq -R -s 'split("\n") | map(select(length > 0))')
+WARNINGS=$(grep -iE '(TODO|FIXME|WARN|WARNING)' "$KIMI_OUTPUT" 2>/dev/null || true)
+WARNINGS=$(echo "$WARNINGS" | head -5 | jq -R -s 'split("\n") | map(select(length > 0))')
 if [ -z "$WARNINGS" ] || [ "$WARNINGS" = "null" ]; then
   WARNINGS='[]'
 fi
