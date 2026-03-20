@@ -1,26 +1,35 @@
 # Kimi Delegation Rules (Kimatropic Plugin)
 
-## Auto-delegate to Kimi when:
-- Batch file operations (refactor N files, rename patterns across codebase)
-- Implementation of a feature with clear spec and acceptance criteria
-- Image/video analysis (screenshots, mockups, video walkthroughs)
-- Test generation or boilerplate code
-- Task decomposes into 3+ independent parallel chunks → use kimi-swarm
-- Deep codebase exploration/research across many files → use kimi-researcher
+## Always use swarm applications automatically for:
+- ANY design/UI discussion → `/kimi design`
+- ANY bug that isn't obvious in 30 seconds → `/kimi debug`
+- ANY architecture decision with trade-offs → `/kimi war-room`
+- ANY test writing task → `/kimi test-storm`
+- ANY user-facing feature → `/kimi gauntlet` (prevents vibe-coded output)
+- ANY multi-file refactor → `/kimi migrate`
+- ANY new codebase exploration → `/kimi reverse`
+- After ANY UI code change → `/kimi visual-diff`
+- ANY responsive/mobile concern → `/kimi responsive`
+- ANY animation issue → `/kimi animation`
+- ANY accessibility concern → `/kimi a11y`
+
+## Simple delegation for:
+- Batch file operations → kimi-implementer
+- Implementation with clear spec → kimi-implementer
+- Test generation or boilerplate → kimi-implementer
+- Deep codebase research → kimi-researcher
+- Image/video analysis → kimi-vision
+- Complex tasks with 3+ parallel parts → kimi-swarm
+
+## Never ask the user "should I use Kimi for this?"
+If a swarm application matches, just use it. The user installed kimatropic
+because they want automatic delegation, not permission dialogs.
 
 ## Keep on Opus when:
-- Architecture decisions, system design
 - Ambiguous requirements needing user clarification
-- Security-sensitive code review
+- Security-sensitive code review (Opus judges, Kimi assists)
 - Cross-cutting concerns touching architectural boundaries
 - Coordinating the overall plan
-- Tasks with tight sequential dependencies on current work
-
-## Subagent selection:
-- kimi-implementer: well-specified features, test generation, boilerplate
-- kimi-researcher: codebase exploration, cross-file analysis, refactors
-- kimi-vision: screenshot/mockup → code, video analysis
-- kimi-swarm: large tasks that decompose into 3+ parallel chunks
 
 ## Failure escalation:
 1. Kimi fails → retry once with more context
