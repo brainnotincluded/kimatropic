@@ -99,7 +99,7 @@ def cmd_screenshot(args):
         if len(parts) != 4:
             print("Region must be x,y,w,h", file=sys.stderr)
             sys.exit(1)
-        img = pyautogui.screenshot(region=tuple(parts))
+        img = pyautogui.screenshot(region=(parts[0], parts[1], parts[2], parts[3]))
     else:
         img = pyautogui.screenshot()
     img.save(args.file)
