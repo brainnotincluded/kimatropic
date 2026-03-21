@@ -4,6 +4,46 @@
 
 Claude (expensive, smart) orchestrates multiple Kimi K2.5 instances (cheap, fast, multimodal) through composable patterns. Instead of one AI doing everything, Kimatropic dispatches parallel swarms of specialized Kimi agents -- 5 orchestration patterns, 13 swarm applications, cross-platform desktop control, visual debugging, and built-in anti-vibe-code detection -- all triggered automatically without you lifting a finger.
 
+## Demo: De-Vibe-Coding a Landing Page
+
+A real example of kimatropic in action. We gave it a typical AI-generated "vibe-coded" landing page and ran two swarm applications:
+
+### Step 1: `/kimi research` -- Vibe-Code Audit (6 parallel Kimi analysts)
+
+The research swarm analyzed the page from multiple angles and returned a structured report:
+
+```json
+{
+  "vibe_code_score": 92,
+  "verdict": "Textbook vibe-coded landing page",
+  "score_breakdown": {
+    "visual_originality": 10,
+    "functional_completeness": 8,
+    "content_authenticity": 5,
+    "code_quality": 20
+  }
+}
+```
+
+**16 findings** across 4 categories: AI buzzword copy ("Elevate Your Workflow", "Unleash the power of AI"), empty `onclick=""` buttons, inline style soup with copy-pasted glassmorphism, no responsive design, zero accessibility markup.
+
+### Step 2: `/kimi swarm` -- Fix Everything (parallel decomposition, 128 seconds)
+
+The swarm decomposed the 16 fixes into parallel sub-tasks and executed them all:
+
+| Before | After |
+|--------|-------|
+| ![Before -- vibe-coded](docs/demo/before.png) | ![After -- de-vibe-coded](docs/demo/after.png) |
+
+**What changed:**
+- "Elevate Your Workflow" -> "Manage Projects with TaskFlow" (real product name)
+- Empty buttons -> working `/signup` route with form + smooth scroll to features
+- Copy-pasted inline styles -> clean CSS classes in `<style>` block
+- "Feature One/Two/Three" -> "Task Board", "Team Chat", "Analytics Dashboard" with real descriptions
+- Added: DOCTYPE, charset, viewport meta, semantic HTML, ARIA labels, hover/focus states, responsive grid, 404 handler, footer
+
+**Total time:** 128 seconds for the swarm to fix all 16 issues. Cost: ~0.5x of a single Opus session.
+
 ## Why Kimatropic?
 
 One Opus thought costs roughly the same as ten Kimi executions. Kimatropic exploits that asymmetry: Claude thinks, Kimi does.
