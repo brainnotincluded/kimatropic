@@ -123,6 +123,35 @@ The audit found an unexpected insight: while the site avoids most vibe-code anti
 
 ---
 
+### Demo 5: `/kimi war-room` — Architecture Decision Debate
+
+We asked 5 Kimi experts to debate a real startup architecture decision:
+
+> "Our startup has 15 developers, $3M ARR, building a B2B SaaS project management tool. We currently have a Django monolith that's getting slow. Should we migrate to microservices, adopt a modular monolith, or stay with Django and optimize?"
+
+**Command:** `/kimi swarm <war room debate with 5 experts, 3 rounds>`
+
+**5 experts, 3 rounds of structured debate:**
+
+| Expert | Round 1 Position | Round 2 Steel-Man | Round 3 Final |
+|--------|-----------------|-------------------|---------------|
+| Security Engineer | Stay & optimize (unified auth boundary) | Argued FOR microservices (blast radius isolation) | Modular monolith |
+| Performance Engineer | Modular monolith + optimize | Argued FOR pure optimization only | Optimize first, modularize second |
+| UX Advocate | Stay & optimize (feature velocity) | Argued FOR microservices (independent deploy) | Optimize, modularize incrementally |
+| Maintenance Engineer | Modular monolith (clear ownership) | Argued FOR microservices (enforced boundaries) | Modular monolith with strict enforcement |
+| Domain Expert (B2B SaaS) | Modular monolith (market execution) | Argued FOR microservices (long-term scale) | Modular monolith, review at 24 months |
+
+**Decision:** Unanimous modular monolith with phased approach:
+- Phase 1 (months 1-3): Pure performance optimization — fix top 20 queries, add Redis, PgBouncer, ASGI
+- Phase 2 (months 3-9): Incremental modularization alongside feature development
+- Phase 3 (month 24+): Data-driven review of whether any module needs extraction
+
+**Key insight from the debate:** The steel-manning round (Round 2) forced each expert to genuinely argue for their least favorite option. The Security Engineer's steel-man for microservices (blast radius isolation for PCI compliance) was so compelling it changed the final ADR to include a compliance review trigger. This is something a simple pros/cons list would never produce.
+
+> 5 experts, 3 rounds, steel-manning, and a production-ready Architecture Decision Record — from a one-paragraph prompt.
+
+---
+
 ## Why Kimatropic?
 
 One Opus thought costs roughly the same as ten Kimi executions. Kimatropic exploits that asymmetry: Claude thinks, Kimi does.
