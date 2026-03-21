@@ -44,6 +44,85 @@ The swarm decomposed the 16 fixes into parallel sub-tasks and executed them all:
 
 **Total time:** 128 seconds for the swarm to fix all 16 issues. Cost: ~0.5x of a single Opus session.
 
+---
+
+### Demo 2: `/kimi reverse` — Reverse-Engineering Express.js
+
+We pointed kimatropic at the [Express.js](https://github.com/expressjs/express) source code (the most popular Node.js web framework) and asked it to reverse-engineer the architecture.
+
+**Command:** `/kimi research Reverse-engineer the Express.js framework`
+
+**Result** (single Kimi researcher, ~45 seconds):
+
+The analysis mapped Express's entire architecture across 6 source files (~2,500 lines):
+
+- **Request lifecycle:** `http.Server` → `app(req, res)` → `app.handle()` → `Router.handle()` → Layer stack → `finalhandler`
+- **Three-tier routing:** Router → Layer → Route, with path matching via `path-to-regexp`
+- **Middleware chain:** Linear stack with `next()` propagation, `next(err)` for error path, `next('route')` to skip, sync overflow protection via `setImmediate` after 100 calls
+- **6 design patterns identified:** Chain of Responsibility, Decorator (prototype swapping on req/res), Factory, Composite (sub-app mounting), Lazy Init, Strategy (compiled settings)
+- **23 production dependencies mapped** with exact purpose and file references
+- **Express 5 vs 4 diff:** Router extracted to external `router` package, promise rejection auto-handling added
+
+> One Kimi instance mapped what would take a developer hours of source reading — with file:line references for every claim.
+
+---
+
+### Demo 3: `/kimi debug` — Diagnosing a Real Express.js Bug
+
+We fed kimatropic a real open bug report from Express.js ([#6462](https://github.com/expressjs/express/issues/6462): `logError` swallows error details).
+
+**Command:** `/kimi debug logError swallows error.cause in Express.js`
+
+**Result** (single Kimi researcher, ~85 seconds):
+
+- **Root cause found:** `application.js:615-618` — the `logerror` function only logs `err.stack || err.toString()`, which drops the `Error.cause` chain (standard since Node.js 16.9)
+- **Impact:** Developers debugging production issues see only the top-level error, losing the entire cause chain. Makes root-cause analysis extremely difficult for chained errors from database wrappers, HTTP clients, and ORMs.
+- **Concrete fix proposed:** A `while(cause)` loop that walks the cause chain, formatting each level with `[cause]:` prefix
+- **Breaking effects assessed:** Zero breaking changes — `logerror` is a private function, output is additive, single `console.error` call preserved
+
+```javascript
+// Proposed fix for application.js:615-618
+function logerror(err) {
+  if (this.get('env') !== 'test') {
+    var msg = err.stack || err.toString();
+    var cause = err.cause;
+    while (cause) {
+      msg += '\n  [cause]: ' + (cause instanceof Error
+        ? (cause.stack || cause.toString()) : String(cause));
+      cause = cause instanceof Error ? cause.cause : undefined;
+    }
+    console.error(msg);
+  }
+}
+```
+
+> Kimi traced the bug from entry point to root cause, proposed a fix, and assessed breaking effects — all from a one-line bug description.
+
+---
+
+### Demo 4: `/kimi research` — Design Audit of vibecoding.app
+
+We ran the anti-vibe-code audit against [vibecoding.app](https://vibecoding.app) — a site that catalogs vibe-coding tools.
+
+**Command:** `/kimi research Analyze vibecoding.app for vibe-code smells`
+
+**Result** (single Kimi researcher, ~150 seconds):
+
+| Category | Score | Key Finding |
+|----------|-------|-------------|
+| Visual Design | 30/100 | Built on standard Next.js + Tailwind + shadcn stack, but no glassomorphism or neon abuse |
+| Functional Quality | 15/100 | Navigation works, quiz has real filter logic, no dead buttons |
+| Content Authenticity | 40/100 | Real testimonials (Andrej Karpathy, Burke Holland), but "AI-native" appears 8x |
+| Code Quality | 15/100 | Proper semantic HTML, JSON-LD schema, Next.js image optimization |
+
+**Overall vibe-code score: 25/100** — "NOT a heavily vibe-coded site."
+
+The audit found an unexpected insight: while the site avoids most vibe-code anti-patterns, its "Top Rated Tools" rankings may be influenced by affiliate revenue (Cursor, Lovable, Windsurf all have affiliate links AND top rankings). The Kimi researcher flagged this as the site's biggest credibility issue — something a purely visual audit would miss.
+
+> The irony: a site dedicated to cataloging vibe-coding tools is itself built with the prototypical vibe-coding stack, but executed with enough care to avoid most of the anti-patterns it documents.
+
+---
+
 ## Why Kimatropic?
 
 One Opus thought costs roughly the same as ten Kimi executions. Kimatropic exploits that asymmetry: Claude thinks, Kimi does.
