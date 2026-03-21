@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
+# ============================================================================
 # screen-capture.sh — High-level capture workflows for kimatropic
-# Combines desktop-control.py commands into reusable capture sequences
+#
+# Combines desktop-control.py commands into reusable capture sequences:
+# multi-viewport screenshots, timed recordings, scripted interaction flows,
+# and full-capture bundles.
+#
+# Usage:
+#   ./screen-capture.sh <command> [args...]
+#
+# Exit codes:
+#   0 — Capture completed successfully
+#   1 — Missing arguments or unknown command
+# ============================================================================
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONTROL="$SCRIPT_DIR/desktop-control.py"
+readonly SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+readonly CONTROL="$SCRIPT_DIR/desktop-control.py"
 
 usage() {
   cat <<'USAGE'

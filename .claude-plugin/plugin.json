@@ -1,7 +1,8 @@
 {
   "name": "kimatropic",
-  "description": "Delegate tasks to Kimi K2.5 via subagents with lossy summary compression. Supports implementation, research, vision, and swarm delegation modes.",
-  "version": "0.1.0",
+  "description": "Delegate tasks to Kimi K2.5 via subagents with lossy summary compression. Supports implementation, research, vision, swarm orchestration, and desktop automation delegation modes.",
+  "version": "0.2.0",
+  "homepage": "https://github.com/brainnotincluded/kimatropic",
   "author": {
     "name": "Daniil"
   }

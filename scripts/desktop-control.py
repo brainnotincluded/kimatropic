@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""desktop-control.py — Cross-platform desktop automation via pyautogui.
+"""Cross-platform desktop automation via pyautogui.
 
 Provides a CLI interface for Claude to drive desktop interactions:
 click, drag, scroll, type, screenshot, window management, video recording.
+
+Each command emits a JSON result on stdout describing the action taken,
+making it easy to chain into higher-level orchestration scripts.
 
 Usage:
     python3 desktop-control.py <command> [args...]
@@ -22,7 +25,14 @@ Commands:
     window-focus <title>                 Focus window by title substring
     window-resize <title> <w> <h>        Resize window
     mouse-position                       Print current mouse x,y
+
+Exit codes:
+    0 — Success
+    1 — Command-specific error (invalid args, missing window, etc.)
+    2 — No command specified
 """
+
+from __future__ import annotations
 
 import argparse
 import json
@@ -32,8 +42,11 @@ import signal
 import subprocess
 import sys
 import time
+from typing import Any
 
 import pyautogui
+
+__version__ = "0.2.0"
 
 # Safety: prevent pyautogui from moving to corners to trigger OS failsafes
 pyautogui.FAILSAFE = True
@@ -43,31 +56,41 @@ pyautogui.PAUSE = 0.1
 PIDFILE = os.path.join(os.environ.get("TMPDIR", "/tmp"), "kimatropic-ffmpeg.pid")
 
 
-def cmd_click(args):
+def _emit(result: dict[str, Any]) -> None:
+    """Print a JSON result to stdout."""
+    print(json.dumps(result))
+
+
+def cmd_click(args: argparse.Namespace) -> None:
+    """Click at the given (x, y) coordinates."""
     pyautogui.click(args.x, args.y)
-    print(json.dumps({"action": "click", "x": args.x, "y": args.y}))
+    _emit({"action": "click", "x": args.x, "y": args.y})
 
 
-def cmd_double_click(args):
+def cmd_double_click(args: argparse.Namespace) -> None:
+    """Double-click at the given (x, y) coordinates."""
     pyautogui.doubleClick(args.x, args.y)
-    print(json.dumps({"action": "double-click", "x": args.x, "y": args.y}))
+    _emit({"action": "double-click", "x": args.x, "y": args.y})
 
 
-def cmd_right_click(args):
+def cmd_right_click(args: argparse.Namespace) -> None:
+    """Right-click at the given (x, y) coordinates."""
     pyautogui.rightClick(args.x, args.y)
-    print(json.dumps({"action": "right-click", "x": args.x, "y": args.y}))
+    _emit({"action": "right-click", "x": args.x, "y": args.y})
 
 
-def cmd_drag(args):
-    duration = args.duration if args.duration else 0.5
+def cmd_drag(args: argparse.Namespace) -> None:
+    """Drag from (x1, y1) to (x2, y2) with optional duration."""
+    duration: float = args.duration if args.duration else 0.5
     pyautogui.moveTo(args.x1, args.y1)
     pyautogui.drag(args.x2 - args.x1, args.y2 - args.y1, duration=duration)
-    print(json.dumps({"action": "drag", "from": [args.x1, args.y1], "to": [args.x2, args.y2]}))
+    _emit({"action": "drag", "from": [args.x1, args.y1], "to": [args.x2, args.y2]})
 
 
-def cmd_scroll(args):
-    direction = args.direction.lower()
-    amount = args.amount
+def cmd_scroll(args: argparse.Namespace) -> None:
+    """Scroll in the given direction by the specified amount."""
+    direction: str = args.direction.lower()
+    amount: int = args.amount
     if direction == "up":
         pyautogui.scroll(amount)
     elif direction == "down":
@@ -79,23 +102,26 @@ def cmd_scroll(args):
     else:
         print(f"Unknown direction: {direction}", file=sys.stderr)
         sys.exit(1)
-    print(json.dumps({"action": "scroll", "direction": direction, "amount": amount}))
+    _emit({"action": "scroll", "direction": direction, "amount": amount})
 
 
-def cmd_type(args):
+def cmd_type(args: argparse.Namespace) -> None:
+    """Type a text string character by character."""
     pyautogui.typewrite(args.text, interval=0.02)
-    print(json.dumps({"action": "type", "length": len(args.text)}))
+    _emit({"action": "type", "length": len(args.text)})
 
 
-def cmd_key(args):
-    keys = args.combo.split("+")
+def cmd_key(args: argparse.Namespace) -> None:
+    """Press a key combination (e.g. ctrl+c)."""
+    keys: list[str] = args.combo.split("+")
     pyautogui.hotkey(*keys)
-    print(json.dumps({"action": "key", "combo": args.combo}))
+    _emit({"action": "key", "combo": args.combo})
 
 
-def cmd_screenshot(args):
+def cmd_screenshot(args: argparse.Namespace) -> None:
+    """Take a screenshot, optionally restricted to a region."""
     if args.region:
-        parts = [int(x) for x in args.region.split(",")]
+        parts: list[int] = [int(x) for x in args.region.split(",")]
         if len(parts) != 4:
             print("Region must be x,y,w,h", file=sys.stderr)
             sys.exit(1)
@@ -103,15 +129,16 @@ def cmd_screenshot(args):
     else:
         img = pyautogui.screenshot()
     img.save(args.file)
-    print(json.dumps({"action": "screenshot", "file": args.file, "size": [img.width, img.height]}))
+    _emit({"action": "screenshot", "file": args.file, "size": [img.width, img.height]})
 
 
-def cmd_record_start(args):
-    system = platform.system()
+def cmd_record_start(args: argparse.Namespace) -> None:
+    """Start an ffmpeg screen recording in the background."""
+    system: str = platform.system()
     if system == "Darwin":
         input_fmt = ["-f", "avfoundation", "-i", "1:none"]
     elif system == "Linux":
-        display = os.environ.get("DISPLAY", ":0.0")
+        display: str = os.environ.get("DISPLAY", ":0.0")
         input_fmt = ["-f", "x11grab", "-i", display]
     elif system == "Windows":
         input_fmt = ["-f", "gdigrab", "-i", "desktop"]
@@ -119,23 +146,24 @@ def cmd_record_start(args):
         print(f"Unsupported platform: {system}", file=sys.stderr)
         sys.exit(1)
 
-    cmd = ["ffmpeg", "-y", "-framerate", "30"] + input_fmt + [
+    ffmpeg_cmd: list[str] = ["ffmpeg", "-y", "-framerate", "30"] + input_fmt + [
         "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
-        args.file
+        args.file,
     ]
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    proc = subprocess.Popen(ffmpeg_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     with open(PIDFILE, "w") as f:
         f.write(str(proc.pid))
-    print(json.dumps({"action": "record-start", "file": args.file, "pid": proc.pid}))
+    _emit({"action": "record-start", "file": args.file, "pid": proc.pid})
 
 
-def cmd_record_stop(args):
+def cmd_record_stop(args: argparse.Namespace) -> None:
+    """Stop a running ffmpeg screen recording."""
     if not os.path.exists(PIDFILE):
         print("No recording in progress", file=sys.stderr)
         sys.exit(1)
     with open(PIDFILE) as f:
-        pid = int(f.read().strip())
+        pid: int = int(f.read().strip())
     try:
         os.kill(pid, signal.SIGINT)
         # Wait briefly for ffmpeg to finalize
@@ -143,17 +171,16 @@ def cmd_record_stop(args):
     except ProcessLookupError:
         pass
     os.remove(PIDFILE)
-    print(json.dumps({"action": "record-stop", "pid": pid}))
+    _emit({"action": "record-stop", "pid": pid})
 
 
-def _get_all_windows():
-    """Cross-platform helper to get all windows.
+def _get_all_windows() -> list[dict[str, Any]]:
+    """Return a list of visible windows with title, position, size, and visibility.
 
-    Returns list of dicts with title, position, size, visible keys.
-    On macOS, pygetwindow lacks getAllWindows(), so we use Quartz directly.
-    On other platforms, we use pygetwindow.getAllWindows().
+    On macOS, pygetwindow lacks getAllWindows(), so we use the Quartz
+    framework directly. On other platforms, we fall back to pygetwindow.
     """
-    system = platform.system()
+    system: str = platform.system()
     if system == "Darwin":
         try:
             from Quartz import (CGWindowListCopyWindowInfo,
@@ -191,81 +218,85 @@ def _get_all_windows():
     return windows
 
 
-def cmd_window_list(args):
+def cmd_window_list(args: argparse.Namespace) -> None:
+    """List all visible windows as JSON."""
     try:
-        windows = _get_all_windows()
+        windows: list[dict[str, Any]] = _get_all_windows()
         print(json.dumps(windows, indent=2))
     except ImportError:
         print("pygetwindow not installed", file=sys.stderr)
         sys.exit(1)
 
 
-def cmd_window_focus(args):
+def cmd_window_focus(args: argparse.Namespace) -> None:
+    """Focus a window by title substring match."""
     try:
         import pygetwindow as gw
-        # Use getAllTitles on macOS, getAllWindows on other platforms
         if platform.system() == "Darwin":
-            titles = [t for t in gw.getAllTitles() if t.strip()]
-            matches = [t for t in titles if args.title.lower() in t.lower()]
+            titles: list[str] = [t for t in gw.getAllTitles() if t.strip()]
+            matches: list[str] = [t for t in titles if args.title.lower() in t.lower()]
             if not matches:
-                print(json.dumps({"action": "window-focus", "error": f"No window matching '{args.title}'"}))
+                _emit({"action": "window-focus", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            # On macOS, activate() is a module-level function that activates by app name
-            # Use AppleScript for reliable window focusing
+            matched_title: str = matches[0].strip()
+            # Use AppleScript for reliable window focusing on macOS
             subprocess.run([
                 "osascript", "-e",
-                f'tell application "{matches[0].strip()}" to activate'
-            ], capture_output=True)
-            print(json.dumps({"action": "window-focus", "title": matches[0].strip()}))
+                f'tell application "{matched_title}" to activate'
+            ], capture_output=True, check=False)
+            _emit({"action": "window-focus", "title": matched_title})
         else:
-            matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
-            if not matches:
-                print(json.dumps({"action": "window-focus", "error": f"No window matching '{args.title}'"}))
+            win_matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
+            if not win_matches:
+                _emit({"action": "window-focus", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            win = matches[0]
+            win = win_matches[0]
             win.activate()
-            print(json.dumps({"action": "window-focus", "title": win.title}))
+            _emit({"action": "window-focus", "title": win.title})
     except ImportError:
         print("pygetwindow not installed", file=sys.stderr)
         sys.exit(1)
 
 
-def cmd_window_resize(args):
+def cmd_window_resize(args: argparse.Namespace) -> None:
+    """Resize a window by title substring match."""
     try:
         import pygetwindow as gw
         if platform.system() == "Darwin":
-            titles = [t for t in gw.getAllTitles() if t.strip()]
-            matches = [t for t in titles if args.title.lower() in t.lower()]
+            titles: list[str] = [t for t in gw.getAllTitles() if t.strip()]
+            matches: list[str] = [t for t in titles if args.title.lower() in t.lower()]
             if not matches:
-                print(json.dumps({"action": "window-resize", "error": f"No window matching '{args.title}'"}))
+                _emit({"action": "window-resize", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            app_name = matches[0].strip()
+            app_name: str = matches[0].strip()
             # Use AppleScript for reliable window resizing on macOS
             subprocess.run([
                 "osascript", "-e",
                 f'tell application "System Events" to tell process "{app_name}" '
                 f'to set size of front window to {{{args.w}, {args.h}}}'
-            ], capture_output=True)
-            print(json.dumps({"action": "window-resize", "title": app_name, "size": [args.w, args.h]}))
+            ], capture_output=True, check=False)
+            _emit({"action": "window-resize", "title": app_name, "size": [args.w, args.h]})
         else:
-            matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
-            if not matches:
-                print(json.dumps({"action": "window-resize", "error": f"No window matching '{args.title}'"}))
+            win_matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
+            if not win_matches:
+                _emit({"action": "window-resize", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            win = matches[0]
+            win = win_matches[0]
             win.resizeTo(args.w, args.h)
-            print(json.dumps({"action": "window-resize", "title": win.title, "size": [args.w, args.h]}))
+            _emit({"action": "window-resize", "title": win.title, "size": [args.w, args.h]})
     except ImportError:
         print("pygetwindow not installed", file=sys.stderr)
         sys.exit(1)
 
 
-def cmd_mouse_position(args):
+def cmd_mouse_position(args: argparse.Namespace) -> None:
+    """Print the current mouse cursor position."""
     pos = pyautogui.position()
-    print(json.dumps({"x": pos.x, "y": pos.y}))
+    _emit({"x": pos.x, "y": pos.y})
 
 
-def main():
+def main() -> None:
+    """Parse CLI arguments and dispatch to the appropriate command handler."""
     parser = argparse.ArgumentParser(
         description="Cross-platform desktop automation for kimatropic",
         formatter_class=argparse.RawDescriptionHelpFormatter,

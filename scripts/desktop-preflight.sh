@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
+# ============================================================================
 # desktop-preflight.sh — Verify desktop control dependencies
+#
+# Checks that python3, pyautogui, pygetwindow, and ffmpeg are available.
+# Reports the set of capabilities that are ready to use.
+#
+# Usage:
+#   ./desktop-preflight.sh
+#
+# Exit codes:
+#   0 — All critical checks passed (capabilities list on stdout)
+#   1 — One or more critical dependency checks failed (details on stderr)
+# ============================================================================
 set -euo pipefail
 
-OS="$(uname -s)"
+os_name="$(uname -s)"
 errors=()
 capabilities=()
 
@@ -33,18 +45,17 @@ else
 fi
 
 # Check platform-specific permissions
-case "$OS" in
+case "$os_name" in
   Darwin)
     # macOS: Screen Recording permission is required but can't be checked programmatically
-    # Just warn the user
-    echo "Note: macOS requires Screen Recording permission for pyautogui screenshots." >&2
+    echo "desktop-preflight: note: macOS requires Screen Recording permission for pyautogui screenshots." >&2
     echo "  Grant in: System Settings > Privacy & Security > Screen Recording" >&2
     ;;
 esac
 
 # Report errors
 if [ ${#errors[@]} -gt 0 ]; then
-  echo "Desktop preflight failed:" >&2
+  echo "desktop-preflight: ${#errors[@]} error(s) found:" >&2
   for err in "${errors[@]}"; do
     echo "  - $err" >&2
   done
@@ -52,6 +63,7 @@ if [ ${#errors[@]} -gt 0 ]; then
 fi
 
 # Report capabilities
-echo "Desktop preflight OK ($(echo "$OS" | tr '[:upper:]' '[:lower:]'))"
+platform_lower=$(echo "$os_name" | tr '[:upper:]' '[:lower:]')
+echo "desktop-preflight: all checks passed ($platform_lower)"
 echo "Capabilities: ${capabilities[*]}"
 exit 0
