@@ -50,7 +50,7 @@ multi-agent swarm orchestration with parallel analysis.
 ### For swarm applications (v2):
 1. Parse the subcommand to identify the application
 2. Read the application definition from `applications/<name>.md`
-3. Run `desktop-preflight.sh` if desktop control is needed
+3. Run `desktop-preflight.js` (cross-platform) or `desktop-preflight.sh` (Unix) if desktop control is needed
 4. Follow the stages defined in the application file:
    - Execute capture stages (Claude uses browser tools + desktop-control.py)
    - Prepare prompt templates for each Kimi agent per the orchestration pattern
