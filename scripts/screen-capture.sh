@@ -24,9 +24,11 @@ Usage: screen-capture.sh <command> [args...]
 
 Commands:
   screenshot-viewports <output-dir>
-    Take screenshots at 5 standard viewports (resizes active window).
-    Produces: desktop-1920x1080.png, laptop-1440x900.png, tablet-landscape-1024x768.png,
-              tablet-portrait-768x1024.png, mobile-375x812.png
+    Take screenshots at 10 standard viewports (resizes active window).
+    Produces: mobile-375x812.png, mobile-large-414x896.png, iphone-se-750x1334.png,
+              galaxy-s25-1080x2340.png, ipad-mini-768x1024.png, tablet-landscape-1024x768.png,
+              laptop-1366x768.png, fullhd-4x3-1440x1080.png, fullhd-16x9-1920x1080.png,
+              fullhd-21x9-1920x823.png
 
   record-interaction <output-file> <duration-secs>
     Record screen video for N seconds.
@@ -47,11 +49,16 @@ screenshot_viewports() {
 
   # Viewport definitions: name width height
   local viewport_list="
-desktop-1920x1080 1920 1080
-laptop-1440x900 1440 900
-tablet-landscape-1024x768 1024 768
-tablet-portrait-768x1024 768 1024
 mobile-375x812 375 812
+mobile-large-414x896 414 896
+iphone-se-750x1334 750 1334
+galaxy-s25-1080x2340 1080 2340
+ipad-mini-768x1024 768 1024
+tablet-landscape-1024x768 1024 768
+laptop-1366x768 1366 768
+fullhd-4x3-1440x1080 1440 1080
+fullhd-16x9-1920x1080 1920 1080
+fullhd-21x9-1920x823 1920 823
 "
 
   echo "$viewport_list" | while read -r name w h; do
