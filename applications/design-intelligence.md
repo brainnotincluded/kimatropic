@@ -17,15 +17,16 @@ User provides a URL or application name. Optionally specifies whether this is:
 Claude performs all capture using browser tools + desktop control:
 
 1. Navigate to URL (or focus app via desktop-control.py)
-2. Run `screen-capture.sh screenshot-viewports <output-dir>` for 5 viewport sizes
+2. Run `screen-capture.sh screenshot-viewports <output-dir>` for 10 viewport sizes (mobile, mobile-large, iPhone SE, Galaxy S25, iPad mini, tablet-landscape, laptop, FullHD 4:3, 16:9, 21:9)
 3. Record GIF of hover states on all interactive elements (use browser tools)
 4. Record 30-second video of typical navigation flow
 5. Extract page text, CSS custom properties, meta tags (use browser tools / get_page_text)
 6. Save everything to `$TMPDIR/kimatropic-design-<timestamp>/`
 
 **Output of Stage 1:** A directory with:
-- `desktop-1920x1080.png`, `laptop-1440x900.png`, `tablet-landscape-1024x768.png`,
-  `tablet-portrait-768x1024.png`, `mobile-375x812.png`
+- `mobile-375x812.png`, `mobile-large-414x896.png`, `iphone-se-750x1334.png`, `galaxy-s25-1080x2340.png`,
+  `ipad-mini-768x1024.png`, `tablet-landscape-1024x768.png`, `laptop-1366x768.png`,
+  `fullhd-4x3-1440x1080.png`, `fullhd-16x9-1920x1080.png`, `fullhd-21x9-1920x823.png`
 - `interactions.gif` (hover states, clicks)
 - `navigation.mp4` (30s flow)
 - `page-text.txt` (extracted text content)
@@ -54,8 +55,9 @@ scale analysis, and readability assessment at each viewport size.
 
 <context>
 Capture directory: {CAPTURE_DIR}
-Screenshots at 5 viewports: desktop-1920x1080.png, laptop-1440x900.png,
-tablet-landscape-1024x768.png, tablet-portrait-768x1024.png, mobile-375x812.png
+Screenshots at 10 viewports: mobile-375x812.png, mobile-large-414x896.png, iphone-se-750x1334.png,
+galaxy-s25-1080x2340.png, ipad-mini-768x1024.png, tablet-landscape-1024x768.png, laptop-1366x768.png,
+fullhd-4x3-1440x1080.png, fullhd-16x9-1920x1080.png, fullhd-21x9-1920x823.png
 CSS variables: {CSS_VARIABLES_JSON}
 Page text: {PAGE_TEXT}
 </context>
