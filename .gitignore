@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 .DS_Store
 node_modules/
+studio/frontend/node_modules/
+studio/server/uploads/
+studio/server/__pycache__/
