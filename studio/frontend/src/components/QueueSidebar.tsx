@@ -6,7 +6,7 @@ export function QueueSidebar() {
   const items = useStore((s) => s.items);
 
   return (
-    <aside className="w-[280px] shrink-0 bg-[#F5F4FA] border-r border-[#E4E3F1] flex flex-col select-none">
+    <aside className="w-[260px] min-w-[200px] max-w-[320px] shrink-0 bg-[#F5F4FA] border-r border-[#E4E3F1] flex flex-col select-none" style={{ flexBasis: '20%' }}>
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#E4E3F1]">
         <div className="flex items-center justify-between">

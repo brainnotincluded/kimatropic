@@ -52,11 +52,16 @@ function buildSrcdoc(code: string): string {
 <body>
   <div id="preview-root"></div>
   <script>
-    // Render code snippet as displayed content
+    // Render HTML code snippet directly as live component
     const root = document.getElementById('preview-root');
     const code = ${JSON.stringify(code)};
-    // Try to extract JSX-like content and render as styled HTML
-    root.innerHTML = '<pre style="font-family: JetBrains Mono, monospace; font-size: 13px; line-height: 1.6; color: #2D2B42; white-space: pre-wrap; word-wrap: break-word; padding: 16px; background: #F5F4FA; border-radius: 12px; border: 1px solid #E4E3F1;">' + code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>';
+    // If the code looks like HTML (starts with < or contains tags), render it directly
+    if (code.trim().startsWith('<') || code.includes('</')) {
+      root.innerHTML = code;
+    } else {
+      // For non-HTML code (e.g. JSX/TSX), show as formatted code block
+      root.innerHTML = '<pre style="font-family: JetBrains Mono, monospace; font-size: 13px; line-height: 1.6; color: #2D2B42; white-space: pre-wrap; word-wrap: break-word; padding: 16px; background: #F5F4FA; border-radius: 12px; border: 1px solid #E4E3F1;">' + code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>';
+    }
   </script>
 </body>
 </html>`;
@@ -91,7 +96,7 @@ export function PreviewArea() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative"
+            className="w-full h-full flex items-center justify-center p-4"
             style={scaleStyle}
           >
             {srcdoc ? (
@@ -102,10 +107,10 @@ export function PreviewArea() {
                 title={selectedItem.component_name}
                 className="rounded-2xl shadow-lg border border-[#E4E3F1] bg-white"
                 style={{
-                  width: zoom === "fit" ? "680px" : "680px",
-                  height: zoom === "fit" ? "460px" : "460px",
-                  maxWidth: zoom === "fit" ? "90vw" : "none",
-                  maxHeight: zoom === "fit" ? "80vh" : "none",
+                  width: "100%",
+                  height: "100%",
+                  maxWidth: zoom === "fit" ? "100%" : "none",
+                  maxHeight: zoom === "fit" ? "100%" : "none",
                 }}
               />
             ) : selectedItem.screenshot_path ? (

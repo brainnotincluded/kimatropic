@@ -72,7 +72,7 @@ export function FeedbackPanel() {
   // Empty state
   if (!selectedItem) {
     return (
-      <aside className="w-[360px] shrink-0 bg-white border-l border-[#E4E3F1] flex items-center justify-center">
+      <aside className="w-[320px] min-w-[260px] max-w-[400px] shrink-0 bg-white border-l border-[#E4E3F1] flex items-center justify-center">
         <div className="text-center">
           <svg
             width="24"
@@ -94,7 +94,7 @@ export function FeedbackPanel() {
   }
 
   return (
-    <aside className="w-[360px] shrink-0 bg-white border-l border-[#E4E3F1] flex flex-col overflow-hidden">
+    <aside className="w-[320px] min-w-[260px] max-w-[400px] shrink-0 bg-white border-l border-[#E4E3F1] flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-5 py-4 border-b border-[#E4E3F1]">
         <div className="flex items-center justify-between gap-2">
