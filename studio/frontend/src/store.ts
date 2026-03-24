@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { QueueItem, ConnectionStatus } from './types';
+import { api } from './api';
 
 interface StoreState {
   items: QueueItem[];
@@ -10,9 +11,10 @@ interface StoreState {
   updateItem: (id: string, updates: Partial<QueueItem>) => void;
   selectItem: (id: string | null) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
+  gatherComponents: () => Promise<void>;
 }
 
-export const useStore = create<StoreState>((set) => ({
+export const useStore = create<StoreState>((set, get) => ({
   items: [],
   selectedId: null,
   connectionStatus: 'disconnected',
@@ -25,4 +27,16 @@ export const useStore = create<StoreState>((set) => ({
   })),
   selectItem: (id) => set({ selectedId: id }),
   setConnectionStatus: (status) => set({ connectionStatus: status }),
+  gatherComponents: async () => {
+    try {
+      const result = await api.gatherComponents();
+      // Re-fetch queue to get the newly added items
+      const items = await api.fetchQueue();
+      set({ items });
+      console.log(`Gathered ${result.count} components`);
+    } catch (err) {
+      console.error('Failed to gather components:', err);
+      throw err;
+    }
+  },
 }));

@@ -5,7 +5,7 @@ import { FeedbackPanel } from "./FeedbackPanel";
 
 export function Layout() {
   return (
-    <div className="h-screen flex flex-col bg-[#0A0B0D]">
+    <div className="h-screen flex flex-col bg-[#FAFBFE]">
       <TopBar />
       <div className="flex-1 flex min-h-0">
         <QueueSidebar />

@@ -52,6 +52,16 @@ class API {
     return data.feedback_history;
   }
 
+  async gatherComponents(workdir?: string): Promise<{ count: number; items: QueueItem[] }> {
+    const res = await fetch(`${API_BASE}/gather`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workdir: workdir || "." }),
+    });
+    if (!res.ok) throw new Error("Failed to gather components");
+    return res.json();
+  }
+
   connectSocket(): void {
     if (this.socket) return;
 

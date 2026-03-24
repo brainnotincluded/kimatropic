@@ -4,18 +4,18 @@ interface Props {
 
 const config = {
   pending: {
-    bg: "rgba(0, 217, 255, 0.1)",
-    text: "#00D9FF",
+    bg: "#F5F3FF",
+    text: "#7C6EF6",
     label: "Pending",
   },
   approved: {
-    bg: "rgba(34, 197, 94, 0.1)",
-    text: "#22C55E",
+    bg: "#E8F8F0",
+    text: "#5CC99B",
     label: "Approved",
   },
   rejected: {
-    bg: "rgba(239, 68, 68, 0.1)",
-    text: "#EF4444",
+    bg: "#FDE8EC",
+    text: "#E8677A",
     label: "Rejected",
   },
 } as const;

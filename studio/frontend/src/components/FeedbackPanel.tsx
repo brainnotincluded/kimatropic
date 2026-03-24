@@ -72,14 +72,14 @@ export function FeedbackPanel() {
   // Empty state
   if (!selectedItem) {
     return (
-      <aside className="w-[360px] shrink-0 bg-[#0F1114] border-l border-[#2A3038] flex items-center justify-center">
+      <aside className="w-[360px] shrink-0 bg-white border-l border-[#E4E3F1] flex items-center justify-center">
         <div className="text-center">
           <svg
             width="24"
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#2A3038"
+            stroke="#D0CEE8"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -87,23 +87,23 @@ export function FeedbackPanel() {
           >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          <p className="text-[#9CA3AF] text-sm">Select an item to review</p>
+          <p className="text-[#8B89A3] text-sm">Select an item to review</p>
         </div>
       </aside>
     );
   }
 
   return (
-    <aside className="w-[360px] shrink-0 bg-[#0F1114] border-l border-[#2A3038] flex flex-col overflow-hidden">
+    <aside className="w-[360px] shrink-0 bg-white border-l border-[#E4E3F1] flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-[#2A3038]">
+      <div className="px-5 py-4 border-b border-[#E4E3F1]">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-[#F7F8FA] font-semibold text-base truncate">
+          <h2 className="text-[#2D2B42] font-semibold text-base truncate">
             {selectedItem.component_name}
           </h2>
           <StatusBadge status={selectedItem.status} />
         </div>
-        <p className="text-[10px] text-[#6B7280] mt-1 font-mono">
+        <p className="text-[10px] text-[#B8B6CC] mt-1 font-mono">
           {selectedItem.viewport}
         </p>
       </div>
@@ -116,7 +116,7 @@ export function FeedbackPanel() {
             <div>
               <button
                 onClick={() => setShowCode(!showCode)}
-                className="flex items-center justify-between w-full text-xs text-[#9CA3AF] hover:text-[#F7F8FA] transition-colors group"
+                className="flex items-center justify-between w-full text-xs text-[#8B89A3] hover:text-[#2D2B42] transition-colors duration-200 group"
               >
                 <span className="font-medium">Code Snippet</span>
                 <motion.svg
@@ -144,7 +144,7 @@ export function FeedbackPanel() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <pre className="mt-2 p-3 bg-[#0A0B0D] border border-[#1E2329] rounded-md overflow-x-auto text-[11px] text-[#9CA3AF] font-mono leading-relaxed">
+                    <pre className="mt-2 p-3 bg-[#F5F4FA] border border-[#E4E3F1] rounded-lg overflow-x-auto text-[11px] text-[#2D2B42] font-mono leading-relaxed">
                       <code>{selectedItem.code_snippet}</code>
                     </pre>
                   </motion.div>
@@ -154,11 +154,11 @@ export function FeedbackPanel() {
           )}
 
           {/* Divider */}
-          <div className="h-px bg-[#1E2329]" />
+          <div className="h-px bg-[#E4E3F1]" />
 
           {/* Comment */}
           <div>
-            <label className="block text-xs text-[#9CA3AF] font-medium mb-2">
+            <label className="block text-xs text-[#8B89A3] font-medium mb-2">
               Feedback
             </label>
             <textarea
@@ -166,14 +166,14 @@ export function FeedbackPanel() {
               onChange={(e) => setComment(e.target.value)}
               placeholder="What needs to change?"
               rows={4}
-              className="w-full p-3 bg-[#15181C] border border-[#2A3038] rounded-md text-[#F7F8FA] text-sm placeholder-[#6B7280] resize-y focus:outline-none focus:border-[#00D9FF] transition-colors leading-relaxed"
+              className="w-full p-3 bg-[#FAFBFE] border border-[#E4E3F1] rounded-lg text-[#2D2B42] text-sm placeholder-[#B8B6CC] resize-y focus:outline-none focus:border-[#7C6EF6] focus:ring-2 focus:ring-[#7C6EF6]/10 transition-all duration-200 leading-relaxed"
               style={{ minHeight: "100px" }}
             />
           </div>
 
           {/* File Upload */}
           <div>
-            <label className="block text-xs text-[#9CA3AF] font-medium mb-2">
+            <label className="block text-xs text-[#8B89A3] font-medium mb-2">
               Attachment
             </label>
             <div
@@ -184,10 +184,10 @@ export function FeedbackPanel() {
               }}
               onDragLeave={() => setIsDragOver(false)}
               onClick={() => fileInputRef.current?.click()}
-              className="relative p-4 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-150 text-center"
+              className="relative p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 text-center"
               style={{
-                borderColor: isDragOver ? "#00D9FF" : "#2A3038",
-                backgroundColor: isDragOver ? "rgba(0,217,255,0.03)" : "#15181C",
+                borderColor: isDragOver ? "#7C6EF6" : "#E4E3F1",
+                backgroundColor: isDragOver ? "rgba(124,110,246,0.03)" : "#FAFBFE",
               }}
             >
               <input
@@ -207,14 +207,14 @@ export function FeedbackPanel() {
                     <img
                       src={filePreview}
                       alt=""
-                      className="w-10 h-10 rounded object-cover border border-[#2A3038]"
+                      className="w-10 h-10 rounded-lg object-cover border border-[#E4E3F1]"
                     />
                   )}
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-[#F7F8FA] text-xs truncate">
+                    <p className="text-[#2D2B42] text-xs truncate">
                       {file.name}
                     </p>
-                    <p className="text-[#6B7280] text-[10px] mt-0.5">
+                    <p className="text-[#B8B6CC] text-[10px] mt-0.5">
                       {(file.size / 1024).toFixed(1)} KB
                     </p>
                   </div>
@@ -223,7 +223,7 @@ export function FeedbackPanel() {
                       e.stopPropagation();
                       clearFile();
                     }}
-                    className="text-[#6B7280] hover:text-[#EF4444] transition-colors p-1"
+                    className="text-[#B8B6CC] hover:text-[#E8677A] transition-colors duration-200 p-1"
                   >
                     <svg
                       width="14"
@@ -247,7 +247,7 @@ export function FeedbackPanel() {
                     height="20"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#6B7280"
+                    stroke="#B8B6CC"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -257,7 +257,7 @@ export function FeedbackPanel() {
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <p className="text-[#6B7280] text-xs">
+                  <p className="text-[#B8B6CC] text-xs">
                     Drop file or click to upload
                   </p>
                 </div>
@@ -271,10 +271,10 @@ export function FeedbackPanel() {
               whileTap={{ scale: 0.97 }}
               onClick={() => handleSubmit("approve")}
               disabled={isSubmitting}
-              className="w-full py-2.5 rounded-md font-medium text-sm transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
-                backgroundColor: "#22C55E",
-                color: "#fff",
+                backgroundColor: "#5CC99B",
+                color: "#1A3D2E",
               }}
             >
               {isSubmitting ? "Submitting..." : "Approve"}
@@ -284,13 +284,13 @@ export function FeedbackPanel() {
               whileTap={comment.trim() ? { scale: 0.97 } : {}}
               onClick={() => handleSubmit("reject")}
               disabled={isSubmitting || !comment.trim()}
-              className="w-full py-2.5 rounded-md font-medium text-sm transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
                 backgroundColor:
                   !comment.trim() || isSubmitting
-                    ? "rgba(245,158,11,0.3)"
-                    : "#F59E0B",
-                color: "#fff",
+                    ? "rgba(232,103,122,0.3)"
+                    : "#E8677A",
+                color: "#FFFFFF",
               }}
             >
               Request Changes
@@ -303,30 +303,30 @@ export function FeedbackPanel() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="pt-4 border-t border-[#1E2329]"
+                className="pt-4 border-t border-[#E4E3F1]"
               >
-                <h3 className="text-xs text-[#9CA3AF] font-medium mb-3">
+                <h3 className="text-xs text-[#8B89A3] font-medium mb-3">
                   History ({selectedItem.feedback_history.length})
                 </h3>
                 <div className="space-y-2">
                   {selectedItem.feedback_history.map((fb, idx) => (
                     <div
                       key={idx}
-                      className="p-3 bg-[#15181C] rounded-md border border-[#1E2329]"
+                      className="p-3 bg-[#FAFBFE] rounded-lg border border-[#E4E3F1]"
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span
                           className="text-[10px] font-medium"
                           style={{
                             color:
-                              fb.action === "approve" ? "#22C55E" : "#F59E0B",
+                              fb.action === "approve" ? "#5CC99B" : "#E8677A",
                           }}
                         >
                           {fb.action === "approve"
                             ? "Approved"
                             : "Changes Requested"}
                         </span>
-                        <span className="text-[10px] text-[#6B7280]">
+                        <span className="text-[10px] text-[#B8B6CC]">
                           {(() => {
                             try {
                               return new Date(fb.timestamp).toLocaleString([], {
@@ -342,7 +342,7 @@ export function FeedbackPanel() {
                         </span>
                       </div>
                       {fb.comment && (
-                        <p className="text-xs text-[#F7F8FA] leading-relaxed">
+                        <p className="text-xs text-[#2D2B42] leading-relaxed">
                           {fb.comment}
                         </p>
                       )}
@@ -351,7 +351,7 @@ export function FeedbackPanel() {
                           href={fb.attachment_path}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[10px] text-[#00D9FF] mt-1.5 hover:underline"
+                          className="inline-flex items-center gap-1 text-[10px] text-[#7C6EF6] mt-1.5 hover:underline"
                         >
                           <svg
                             width="10"

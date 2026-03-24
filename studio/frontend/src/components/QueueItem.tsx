@@ -8,9 +8,15 @@ interface Props {
 }
 
 const borderColors: Record<QueueItemType["status"], string> = {
-  pending: "#00D9FF",
-  approved: "#22C55E",
-  rejected: "#EF4444",
+  pending: "#7C6EF6",
+  approved: "#5CC99B",
+  rejected: "#E8677A",
+};
+
+const bgColors: Record<QueueItemType["status"], string> = {
+  pending: "#F5F3FF",
+  approved: "#ECFDF3",
+  rejected: "#FEF2F4",
 };
 
 export function QueueItem({ item }: Props) {
@@ -37,18 +43,21 @@ export function QueueItem({ item }: Props) {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={() => selectItem(item.id)}
-      className="w-full text-left rounded-lg cursor-pointer transition-colors outline-none focus-visible:ring-1 focus-visible:ring-[#00D9FF]"
+      className="w-full text-left rounded-xl cursor-pointer transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#7C6EF6]/40"
       style={{
-        backgroundColor: isSelected ? "#1F242A" : "#15181C",
+        backgroundColor: isSelected ? bgColors[item.status] : "#FFFFFF",
         borderLeft: `3px solid ${borderColors[item.status]}`,
         padding: "10px 12px",
+        boxShadow: isSelected
+          ? "0 1px 3px rgba(124, 110, 246, 0.08)"
+          : "0 1px 2px rgba(0,0,0,0.03)",
       }}
-      whileHover={{ backgroundColor: "#1F242A" }}
+      whileHover={{ backgroundColor: "#EDEEF5" }}
     >
       <div className="flex items-start gap-3">
         {/* Thumbnail placeholder */}
         <div
-          className="w-14 h-14 rounded flex-shrink-0 flex items-center justify-center overflow-hidden checkerboard-sm"
+          className="w-14 h-14 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden bg-[#F3F4F8]"
         >
           {item.screenshot_path ? (
             <img
@@ -63,7 +72,7 @@ export function QueueItem({ item }: Props) {
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#2A3038"
+                stroke="#D0CEE8"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -78,13 +87,13 @@ export function QueueItem({ item }: Props) {
 
         {/* Details */}
         <div className="flex-1 min-w-0">
-          <h4 className="text-[#F7F8FA] font-medium text-[13px] leading-tight truncate">
+          <h4 className="text-[#2D2B42] font-medium text-[13px] leading-tight truncate">
             {item.component_name}
           </h4>
           <div className="mt-1.5">
             <StatusBadge status={item.status} />
           </div>
-          <p className="mt-1.5 text-[10px] text-[#6B7280]">{timeLabel}</p>
+          <p className="mt-1.5 text-[10px] text-[#B8B6CC]">{timeLabel}</p>
         </div>
       </div>
     </motion.button>

@@ -1,33 +1,42 @@
 @import "tailwindcss";
 
 /* -----------------------------------------------------------------------
-   Design Tokens
+   Design Tokens — Pastel Palette
    ----------------------------------------------------------------------- */
 :root {
-  --bg-primary: #0A0B0D;
-  --bg-secondary: #0F1114;
-  --bg-card: #15181C;
-  --bg-elevated: #1F242A;
+  --bg-primary: #FAFBFE;
+  --bg-secondary: #F3F4F8;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #EDEEF5;
 
-  --accent: #00D9FF;
-  --accent-purple: #7C3AED;
+  --accent: #7C6EF6;
+  --accent-secondary: #5B9CF6;
 
-  --text-primary: #F7F8FA;
-  --text-secondary: #9CA3AF;
-  --text-muted: #6B7280;
+  --text-primary: #2D2B42;
+  --text-secondary: #8B89A3;
+  --text-muted: #B8B6CC;
 
-  --border-visible: #2A3038;
-  --border-subtle: #1E2329;
+  --border-visible: #E4E3F1;
+  --border-subtle: #D0CEE8;
 
-  --success: #22C55E;
-  --success-hover: #16A34A;
-  --warning: #F59E0B;
-  --warning-hover: #D97706;
-  --error: #EF4444;
+  --success: #5CC99B;
+  --success-bg: #E8F8F0;
+  --success-hover: #4BB88A;
+  --warning: #F0B955;
+  --warning-bg: #FEF5E0;
+  --warning-hover: #E0A945;
+  --error: #E8677A;
+  --error-bg: #FDE8EC;
 
-  --radius-card: 8px;
-  --radius-input: 6px;
-  --radius-modal: 12px;
+  --sidebar-bg: #F5F4FA;
+  --topbar-bg: #FFFFFF;
+
+  --radius-card: 12px;
+  --radius-input: 8px;
+  --radius-modal: 16px;
+
+  --shadow-card: 0 1px 3px rgba(124, 110, 246, 0.08);
+  --shadow-elevated: 0 4px 12px rgba(124, 110, 246, 0.1);
 
   --font-sans: "Geist", "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
@@ -83,30 +92,30 @@ pre,
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3A4149;
+  background: var(--border-subtle);
 }
 
 /* -----------------------------------------------------------------------
    Utilities
    ----------------------------------------------------------------------- */
-.checkerboard {
-  background-image: repeating-conic-gradient(
-    #15181C 0% 25%,
-    #0F1114 0% 50%
-  );
-  background-size: 20px 20px;
-}
-
-.checkerboard-sm {
-  background-image: repeating-conic-gradient(
-    #15181C 0% 25%,
-    #0F1114 0% 50%
-  );
-  background-size: 8px 8px;
+.preview-bg {
+  background-color: var(--bg-secondary);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(0, 217, 255, 0.2);
+  background: rgba(124, 110, 246, 0.15);
   color: var(--text-primary);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #7C6EF6, #5B9CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 200ms ease;
 }

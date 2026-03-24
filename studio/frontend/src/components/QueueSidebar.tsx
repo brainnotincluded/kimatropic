@@ -6,12 +6,12 @@ export function QueueSidebar() {
   const items = useStore((s) => s.items);
 
   return (
-    <aside className="w-[280px] shrink-0 bg-[#0F1114] border-r border-[#2A3038] flex flex-col select-none">
+    <aside className="w-[280px] shrink-0 bg-[#F5F4FA] border-r border-[#E4E3F1] flex flex-col select-none">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#2A3038]">
+      <div className="px-4 py-3 border-b border-[#E4E3F1]">
         <div className="flex items-center justify-between">
-          <h2 className="text-[#F7F8FA] text-sm font-semibold">Review Queue</h2>
-          <span className="text-[10px] text-[#9CA3AF] bg-[#15181C] px-1.5 py-0.5 rounded-full font-medium">
+          <h2 className="text-[#2D2B42] text-sm font-semibold">Review Queue</h2>
+          <span className="text-[10px] text-[#8B89A3] bg-white px-1.5 py-0.5 rounded-full font-medium shadow-sm">
             {items.length}
           </span>
         </div>
@@ -32,7 +32,7 @@ export function QueueSidebar() {
               height="32"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#2A3038"
+              stroke="#D0CEE8"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -41,8 +41,8 @@ export function QueueSidebar() {
               <path d="M3 15h18v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4Z" />
               <line x1="12" y1="10" x2="12" y2="14" />
             </svg>
-            <p className="text-[#9CA3AF] text-xs mt-3">Queue is empty</p>
-            <p className="text-[#6B7280] text-[10px] mt-1">
+            <p className="text-[#8B89A3] text-xs mt-3">Queue is empty</p>
+            <p className="text-[#B8B6CC] text-[10px] mt-1">
               Components will appear here
             </p>
           </div>

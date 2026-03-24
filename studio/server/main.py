@@ -1,5 +1,5 @@
 """
-Kimatropic Studio — FastAPI backend for UI component review.
+Kimatropic Studio -- FastAPI backend for UI component review.
 
 Serves the React frontend, manages a review queue in memory,
 and pushes real-time updates over Socket.IO.
@@ -45,19 +45,21 @@ def get_demo_items() -> List[dict]:
             "component_name": "Button Component",
             "screenshot_path": "",
             "code_snippet": (
-                'export function Button({ children, variant = "primary" }: ButtonProps) {\n'
-                '  return (\n'
-                '    <button\n'
-                '      className={clsx(\n'
-                '        "px-4 py-2 rounded-md font-medium transition-colors",\n'
-                '        variant === "primary" && "bg-cyan-500 text-white hover:bg-cyan-600",\n'
-                '        variant === "ghost" && "bg-transparent text-gray-300 hover:bg-white/5"\n'
-                "      )}\n"
-                "    >\n"
-                "      {children}\n"
-                "    </button>\n"
-                "  );\n"
-                "}"
+                '<div style="display: flex; gap: 12px; align-items: center; padding: 20px;">\n'
+                '  <button style="padding: 10px 20px; border-radius: 8px; border: none; '
+                'background: linear-gradient(135deg, #7C6EF6, #5B9CF6); color: white; '
+                'font-weight: 500; font-size: 14px; cursor: pointer; '
+                'box-shadow: 0 2px 8px rgba(124,110,246,0.25);">Primary</button>\n'
+                '  <button style="padding: 10px 20px; border-radius: 8px; border: 1px solid #E4E3F1; '
+                'background: white; color: #2D2B42; font-weight: 500; font-size: 14px; '
+                'cursor: pointer;">Secondary</button>\n'
+                '  <button style="padding: 10px 20px; border-radius: 8px; border: none; '
+                'background: #5CC99B; color: #1A3D2E; font-weight: 500; font-size: 14px; '
+                'cursor: pointer;">Success</button>\n'
+                '  <button style="padding: 10px 20px; border-radius: 8px; border: none; '
+                'background: #E8677A; color: white; font-weight: 500; font-size: 14px; '
+                'cursor: pointer;">Danger</button>\n'
+                '</div>'
             ),
             "viewport": "1200x800",
             "status": "pending",
@@ -69,14 +71,22 @@ def get_demo_items() -> List[dict]:
             "component_name": "Card Layout",
             "screenshot_path": "",
             "code_snippet": (
-                'export function Card({ title, children }: CardProps) {\n'
-                '  return (\n'
-                '    <div className="bg-[#15181C] rounded-lg border border-[#2A3038] p-6">\n'
-                '      <h3 className="text-lg font-semibold text-white mb-3">{title}</h3>\n'
-                '      <div className="text-gray-400">{children}</div>\n'
-                "    </div>\n"
-                "  );\n"
-                "}"
+                '<div style="max-width: 400px; padding: 24px; background: white; '
+                'border-radius: 12px; border: 1px solid #E4E3F1; '
+                'box-shadow: 0 1px 3px rgba(124,110,246,0.08); font-family: sans-serif;">\n'
+                '  <div style="width: 100%; height: 180px; background: linear-gradient(135deg, #F5F3FF, #EBF2FF); '
+                'border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; '
+                'justify-content: center; color: #8B89A3; font-size: 14px;">Image Placeholder</div>\n'
+                '  <h3 style="margin: 0 0 8px; color: #2D2B42; font-size: 18px; font-weight: 600;">Card Title</h3>\n'
+                '  <p style="margin: 0 0 16px; color: #8B89A3; font-size: 14px; line-height: 1.5;">'
+                'This is a sample card component with a pastel design system.</p>\n'
+                '  <div style="display: flex; gap: 8px;">\n'
+                '    <span style="padding: 4px 10px; border-radius: 20px; background: #E8F8F0; '
+                'color: #5CC99B; font-size: 12px; font-weight: 500;">Tag 1</span>\n'
+                '    <span style="padding: 4px 10px; border-radius: 20px; background: #F5F3FF; '
+                'color: #7C6EF6; font-size: 12px; font-weight: 500;">Tag 2</span>\n'
+                '  </div>\n'
+                '</div>'
             ),
             "viewport": "768x1024",
             "status": "pending",
@@ -88,17 +98,22 @@ def get_demo_items() -> List[dict]:
             "component_name": "Navigation Bar",
             "screenshot_path": "",
             "code_snippet": (
-                'export function Navbar() {\n'
-                '  return (\n'
-                '    <nav className="h-14 bg-[#0F1114] border-b border-[#2A3038] flex items-center px-6">\n'
-                '      <span className="font-semibold text-white">App</span>\n'
-                '      <div className="ml-auto flex gap-4 text-sm text-gray-400">\n'
-                '        <a href="#" className="hover:text-white transition-colors">Dashboard</a>\n'
-                '        <a href="#" className="hover:text-white transition-colors">Settings</a>\n'
-                "      </div>\n"
-                "    </nav>\n"
-                "  );\n"
-                "}"
+                '<nav style="height: 56px; background: white; border-bottom: 1px solid #E4E3F1; '
+                'display: flex; align-items: center; padding: 0 24px; font-family: sans-serif; '
+                'box-shadow: 0 1px 3px rgba(124,110,246,0.08);">\n'
+                '  <span style="font-weight: 600; font-size: 16px; '
+                'background: linear-gradient(135deg, #7C6EF6, #5B9CF6); '
+                '-webkit-background-clip: text; -webkit-text-fill-color: transparent;">AppName</span>\n'
+                '  <div style="margin-left: auto; display: flex; gap: 24px; font-size: 14px;">\n'
+                '    <a href="#" style="color: #7C6EF6; text-decoration: none; font-weight: 500;">Dashboard</a>\n'
+                '    <a href="#" style="color: #8B89A3; text-decoration: none;">Settings</a>\n'
+                '    <a href="#" style="color: #8B89A3; text-decoration: none;">Profile</a>\n'
+                '  </div>\n'
+                '  <div style="margin-left: 24px; width: 32px; height: 32px; border-radius: 50%; '
+                'background: linear-gradient(135deg, #7C6EF6, #5B9CF6); display: flex; '
+                'align-items: center; justify-content: center; color: white; font-size: 13px; '
+                'font-weight: 600;">K</div>\n'
+                '</nav>'
             ),
             "viewport": "1920x1080",
             "status": "pending",
@@ -170,6 +185,75 @@ async def create_queue_item(request: Request) -> JSONResponse:
     await sio.emit("queue_update", {"items": queue_items})
 
     return JSONResponse(content=new_item, status_code=201)
+
+
+@app.post("/api/gather")
+async def gather_components(request: Request) -> JSONResponse:
+    """Scan a working directory for React/HTML component files and add them to the queue."""
+    global queue_items, _demo_seeded
+    _demo_seeded = True  # Mark demo as seeded so it doesn't re-seed
+
+    body = await request.json()
+    workdir = body.get("workdir", ".")
+
+    scan_dir = Path(workdir).resolve()
+    if not scan_dir.is_dir():
+        raise HTTPException(status_code=400, detail=f"Directory not found: {scan_dir}")
+
+    extensions = {".tsx", ".jsx", ".html"}
+    added_items: List[dict] = []
+
+    for root, _dirs, files in os.walk(scan_dir):
+        # Skip node_modules, dist, build, .git, etc.
+        root_path = Path(root)
+        skip_dirs = {"node_modules", "dist", "build", ".git", ".next", "__pycache__", ".venv", "venv"}
+        if any(part in skip_dirs for part in root_path.parts):
+            continue
+
+        for fname in sorted(files):
+            fpath = root_path / fname
+            suffix = fpath.suffix.lower()
+            if suffix not in extensions:
+                continue
+
+            try:
+                content = fpath.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                continue
+
+            # Skip empty or very large files
+            if not content.strip() or len(content) > 50_000:
+                continue
+
+            component_name = fpath.stem
+            # Make a human-friendly name from the filename
+            display_name = component_name.replace("-", " ").replace("_", " ")
+            # Title-case it
+            display_name = " ".join(word.capitalize() for word in display_name.split())
+
+            rel_path = str(fpath.relative_to(scan_dir))
+
+            new_item = {
+                "id": str(uuid.uuid4()),
+                "component_name": f"{display_name} ({rel_path})",
+                "screenshot_path": "",
+                "code_snippet": content,
+                "viewport": "1200x800",
+                "status": "pending",
+                "feedback_history": [],
+                "created_at": _now_iso(),
+            }
+
+            queue_items.append(new_item)
+            added_items.append(new_item)
+
+    await sio.emit("queue_update", {"items": queue_items})
+
+    return JSONResponse(content={
+        "count": len(added_items),
+        "items": added_items,
+        "workdir": str(scan_dir),
+    })
 
 
 @app.post("/api/feedback/{item_id}")
@@ -248,7 +332,7 @@ async def handle_get_queue(sid: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# SPA fallback — serve frontend dist for any non-API path
+# SPA fallback -- serve frontend dist for any non-API path
 # ---------------------------------------------------------------------------
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str) -> FileResponse:
@@ -270,7 +354,7 @@ async def serve_spa(full_path: str) -> FileResponse:
 
 
 # ---------------------------------------------------------------------------
-# Wrap with Socket.IO ASGI app — this is what uvicorn must run
+# Wrap with Socket.IO ASGI app -- this is what uvicorn must run
 # ---------------------------------------------------------------------------
 socket_app = socketio.ASGIApp(sio, app)
 
