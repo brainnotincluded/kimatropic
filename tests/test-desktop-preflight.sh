@@ -15,11 +15,11 @@ expect_exit() {
   set -e
   if [ "$actual" -eq "$expected" ]; then
     echo "PASS: $desc"
-    ((PASS++)) || true
+    ((PASS++)) || true || true
   else
     echo "FAIL: $desc (expected exit $expected, got $actual)"
     echo "  output: $output"
-    ((FAIL++)) || true
+    ((FAIL++)) || true || true
   fi
 }
 
@@ -32,10 +32,10 @@ expect_exit "preflight fails without python3" 1 env PATH="/usr/bin:/bin" "$PREFL
 # Test 3: Script is executable
 if [ -x "$PREFLIGHT" ]; then
   echo "PASS: script is executable"
-  ((PASS++)) || true
+  ((PASS++)) || true || true
 else
   echo "FAIL: script is not executable"
-  ((FAIL++)) || true
+  ((FAIL++)) || true || true
 fi
 
 # Test 4: Output includes capability report
@@ -44,10 +44,10 @@ output=$("$PREFLIGHT" 2>&1)
 set -e
 if echo "$output" | grep -q "click\|screenshot\|record"; then
   echo "PASS: output includes capability report"
-  ((PASS++)) || true
+  ((PASS++)) || true || true
 else
   echo "FAIL: output missing capability report"
-  ((FAIL++)) || true
+  ((FAIL++)) || true || true
 fi
 
 echo ""

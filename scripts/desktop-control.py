@@ -42,11 +42,12 @@ import signal
 import subprocess
 import sys
 import time
+import tempfile
 from typing import Any
 
 import pyautogui
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # Safety: prevent pyautogui from moving to corners to trigger OS failsafes
 pyautogui.FAILSAFE = True
@@ -59,6 +60,49 @@ PIDFILE = os.path.join(os.environ.get("TMPDIR", "/tmp"), "kimatropic-ffmpeg.pid"
 def _emit(result: dict[str, Any]) -> None:
     """Print a JSON result to stdout."""
     print(json.dumps(result))
+
+
+def _screenshot_macos(file_path: str, region: tuple[int, int, int, int] | None = None) -> tuple[int, int]:
+    """Take a screenshot on macOS using screencapture CLI.
+    
+    Returns (width, height) of the captured image.
+    Raises RuntimeError if screencapture fails (e.g., missing Screen Recording permission).
+    """
+    cmd = ["screencapture"]
+    if region:
+        x, y, w, h = region
+        cmd.extend(["-R", f"{x},{y},{w},{h}"])
+    cmd.append("-x")  # no sound
+    cmd.append(file_path)
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        err = result.stderr.strip() if result.stderr else "unknown error"
+        if "could not create image" in err.lower() or result.returncode == 1:
+            raise RuntimeError(
+                "Screen Recording permission required. "
+                "Grant it in: System Settings > Privacy & Security > Screen Recording, "
+                "then restart your terminal."
+            )
+        raise RuntimeError(f"screencapture failed: {err}")
+    
+    # Verify the file is a valid image and get its dimensions
+    try:
+        from PIL import Image
+        with Image.open(file_path) as img:
+            return img.width, img.height
+    except Exception as e:
+        raise RuntimeError(f"Screenshot file invalid: {e}")
+
+
+def _screenshot_fallback(file_path: str, region: tuple[int, int, int, int] | None = None) -> tuple[int, int]:
+    """Fallback screenshot using pyautogui/PIL."""
+    if region:
+        img = pyautogui.screenshot(region=region)
+    else:
+        img = pyautogui.screenshot()
+    img.save(file_path)
+    return img.width, img.height
 
 
 def cmd_click(args: argparse.Namespace) -> None:
@@ -120,16 +164,24 @@ def cmd_key(args: argparse.Namespace) -> None:
 
 def cmd_screenshot(args: argparse.Namespace) -> None:
     """Take a screenshot, optionally restricted to a region."""
+    region: tuple[int, int, int, int] | None = None
     if args.region:
         parts: list[int] = [int(x) for x in args.region.split(",")]
         if len(parts) != 4:
             print("Region must be x,y,w,h", file=sys.stderr)
             sys.exit(1)
-        img = pyautogui.screenshot(region=(parts[0], parts[1], parts[2], parts[3]))
-    else:
-        img = pyautogui.screenshot()
-    img.save(args.file)
-    _emit({"action": "screenshot", "file": args.file, "size": [img.width, img.height]})
+        region = (parts[0], parts[1], parts[2], parts[3])
+    
+    system = platform.system()
+    try:
+        if system == "Darwin":
+            width, height = _screenshot_macos(args.file, region)
+        else:
+            width, height = _screenshot_fallback(args.file, region)
+        _emit({"action": "screenshot", "file": args.file, "size": [width, height]})
+    except RuntimeError as e:
+        _emit({"action": "screenshot", "error": str(e), "file": args.file})
+        sys.exit(1)
 
 
 def cmd_record_start(args: argparse.Namespace) -> None:
@@ -228,24 +280,44 @@ def cmd_window_list(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def _macos_find_process(title: str) -> str | None:
+    """Find the best-matching process name on macOS for window focus/resize."""
+    windows = _get_all_windows()
+    # Exact match first
+    for w in windows:
+        owner = w["title"].split(" - ")[0] if " - " in w["title"] else w["title"]
+        if title.lower() == w["title"].lower() or title.lower() == owner.lower():
+            return owner
+    # Substring match
+    for w in windows:
+        owner = w["title"].split(" - ")[0] if " - " in w["title"] else w["title"]
+        if title.lower() in w["title"].lower() or title.lower() in owner.lower():
+            return owner
+    return None
+
+
 def cmd_window_focus(args: argparse.Namespace) -> None:
     """Focus a window by title substring match."""
     try:
-        import pygetwindow as gw
         if platform.system() == "Darwin":
-            titles: list[str] = [t for t in gw.getAllTitles() if t.strip()]
-            matches: list[str] = [t for t in titles if args.title.lower() in t.lower()]
-            if not matches:
+            app_name = _macos_find_process(args.title)
+            if not app_name:
                 _emit({"action": "window-focus", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            matched_title: str = matches[0].strip()
             # Use AppleScript for reliable window focusing on macOS
-            subprocess.run([
+            result = subprocess.run([
                 "osascript", "-e",
-                f'tell application "{matched_title}" to activate'
-            ], capture_output=True, check=False)
-            _emit({"action": "window-focus", "title": matched_title})
+                f'tell application "System Events" to set frontmost of process "{app_name}" to true'
+            ], capture_output=True, text=True, check=False)
+            if result.returncode != 0:
+                # Fallback: try tell application directly
+                subprocess.run([
+                    "osascript", "-e",
+                    f'tell application "{app_name}" to activate'
+                ], capture_output=True, check=False)
+            _emit({"action": "window-focus", "title": app_name})
         else:
+            import pygetwindow as gw
             win_matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
             if not win_matches:
                 _emit({"action": "window-focus", "error": f"No window matching '{args.title}'"})
@@ -261,22 +333,27 @@ def cmd_window_focus(args: argparse.Namespace) -> None:
 def cmd_window_resize(args: argparse.Namespace) -> None:
     """Resize a window by title substring match."""
     try:
-        import pygetwindow as gw
         if platform.system() == "Darwin":
-            titles: list[str] = [t for t in gw.getAllTitles() if t.strip()]
-            matches: list[str] = [t for t in titles if args.title.lower() in t.lower()]
-            if not matches:
+            app_name = _macos_find_process(args.title)
+            if not app_name:
                 _emit({"action": "window-resize", "error": f"No window matching '{args.title}'"})
                 sys.exit(1)
-            app_name: str = matches[0].strip()
             # Use AppleScript for reliable window resizing on macOS
-            subprocess.run([
-                "osascript", "-e",
+            script = (
                 f'tell application "System Events" to tell process "{app_name}" '
                 f'to set size of front window to {{{args.w}, {args.h}}}'
-            ], capture_output=True, check=False)
+            )
+            result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, check=False)
+            if result.returncode != 0:
+                # Try alternative: set bounds of front window
+                script2 = (
+                    f'tell application "System Events" to tell process "{app_name}" '
+                    f'to set bounds of front window to {{0, 0, {args.w}, {args.h}}}'
+                )
+                subprocess.run(["osascript", "-e", script2], capture_output=True, text=True, check=False)
             _emit({"action": "window-resize", "title": app_name, "size": [args.w, args.h]})
         else:
+            import pygetwindow as gw
             win_matches = [w for w in gw.getAllWindows() if args.title.lower() in w.title.lower()]
             if not win_matches:
                 _emit({"action": "window-resize", "error": f"No window matching '{args.title}'"})
