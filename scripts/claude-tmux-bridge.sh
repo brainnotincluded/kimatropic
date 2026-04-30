@@ -180,11 +180,19 @@ cmd_read() {
   fi
 
   if [ "$wait_flag" = false ]; then
-    local output
-    output=$(tmux capture-pane -t "$session" -p -S -1000 2>/dev/null || true)
+    local output=""
+    # Retry briefly if pane is empty — covers race where the session was just
+    # created and the child process hasn't claimed the pane yet.
+    local read_attempts=0
+    while [ "$read_attempts" -lt 6 ]; do
+      output=$(tmux capture-pane -t "$session" -p -S -1000 2>/dev/null || true)
+      [ -n "$output" ] && break
+      sleep 0.5
+      read_attempts=$((read_attempts + 1))
+    done
     # Escape for JSON
     output=$(printf '%s' "$output" | jq -R -s '.')
-    echo "{\"session\": \"$session\", \"output\": $output}"
+    echo "{\"session\": \"$session\", \"output\": $output, \"read_retries\": $read_attempts}"
     return
   fi
 
@@ -276,9 +284,22 @@ cmd_start() {
   fi
 
   tmux new-session -d -s "$session" -c "$workdir" "claude"
-  sleep 2
 
-  echo "{\"action\": \"start\", \"session\": \"$session\", \"status\": \"created\", \"workdir\": \"$workdir\"}"
+  # Wait until Claude Code UI renders (poll up to 20s).
+  # Avoids race where subsequent `read` calls return empty before the UI claims the pane.
+  local boot_waited=0
+  local boot_max=20
+  while [ "$boot_waited" -lt "$boot_max" ]; do
+    sleep 1
+    boot_waited=$((boot_waited + 1))
+    local pane
+    pane=$(tmux capture-pane -t "$session" -p 2>/dev/null || true)
+    if echo "$pane" | grep -qE "Claude Code|❯|>"; then
+      break
+    fi
+  done
+
+  echo "{\"action\": \"start\", \"session\": \"$session\", \"status\": \"created\", \"workdir\": \"$workdir\", \"boot_seconds\": $boot_waited}"
 }
 
 cmd_stop() {

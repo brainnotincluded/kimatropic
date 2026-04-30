@@ -65,34 +65,62 @@ Polls until Claude's output stops changing, then returns the output. Use this af
 
 ## Return Format
 
-Return a concise report to the parent agent:
+Return a SINGLE JSON object as your final response. No prose, no markdown, no commentary outside the JSON. Use the same shape as other Kimi-* agents (kimi-implementer, kimi-researcher, kimi-swarm, kimi-vision) plus operator-specific fields. This consistency lets the parent agent destructure results uniformly.
 
+**Success:**
 ```json
 {
-  "action": "tmux_exchange",
-  "session": "<session-name>",
-  "message_sent": "<summary of what was sent>",
-  "claude_response": "<Claude's response, trimmed to essentials>",
-  "elapsed_seconds": 8,
-  "status": "success"
+  "status": "success",
+  "summary": "<one-paragraph summary of what tmux Claude accomplished>",
+  "files_modified": [],
+  "files_created": ["<absolute path>"],
+  "files_deleted": [],
+  "errors": [],
+  "warnings": ["<bridge quirks observed, e.g. read race, pane truncation>"],
+  "wall_time_seconds": <integer>,
+  "session": "<tmux session name>",
+  "claude_full_output": "<trimmed pane content, last ~50 lines>"
 }
 ```
 
-If the bridge script fails or the session is not found:
-
+**Failure (bridge error, session not found, claude not in path):**
 ```json
 {
-  "action": "tmux_exchange",
-  "session": "<session-name>",
   "status": "failed",
-  "error": "<error message from bridge>"
+  "summary": "",
+  "files_modified": [],
+  "files_created": [],
+  "files_deleted": [],
+  "errors": ["<error message from bridge or shell>"],
+  "warnings": [],
+  "wall_time_seconds": 0,
+  "session": "<session name or empty>",
+  "claude_full_output": ""
+}
+```
+
+**Timeout (Claude did not stabilize within budget):**
+```json
+{
+  "status": "timeout",
+  "summary": "<best-effort partial summary>",
+  "files_modified": [],
+  "files_created": [],
+  "files_deleted": [],
+  "errors": [],
+  "warnings": ["exchange timed out after <N>s — output may be partial"],
+  "wall_time_seconds": <integer>,
+  "session": "<session name>",
+  "claude_full_output": "<trimmed pane content>"
 }
 ```
 
 ## Important
 
-- Do NOT add your own analysis of Claude's response — just relay it accurately
-- Do NOT modify any files yourself — your job is pure relay
-- Keep messages concise; Claude in tmux has no memory of previous exchanges unless you include context
-- If Claude times out, report the partial output and let the parent decide whether to retry
-- The tmux session runs Claude Code interactively, so it has full tool access (Bash, Read, Write, etc.)
+- Output ONLY the JSON object. No headers, no explanations, no "Reporting back" preface.
+- Do NOT add your own analysis of Claude's response — relay it in `claude_full_output`.
+- Do NOT modify any files yourself — your job is pure relay.
+- Keep `claude_full_output` ≤ 50 lines; truncate the head of the pane buffer if longer.
+- If you observed bridge quirks (e.g. `read` returned empty before retrying, pane scrolled past viewport), put them in `warnings`.
+- Keep messages concise; Claude in tmux has no memory of previous exchanges unless you include context.
+- The tmux session runs Claude Code interactively, so it has full tool access (Bash, Read, Write, etc.).
