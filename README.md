@@ -321,6 +321,40 @@ You can also invoke applications explicitly:
 /kimi swarm "Refactor these 8 API endpoints to use the new error format"
 ```
 
+### Direct Slash Commands
+
+In addition to the `/kimi <subcommand>` skill-based dispatch, the most-used applications are exposed as first-class slash commands so they show up under `/help` and survive context compaction:
+
+```
+/kimatropic:kimi-debug <bug>
+/kimatropic:kimi-design <url>
+/kimatropic:kimi-test-storm <path>
+/kimatropic:kimi-gauntlet <task>
+/kimatropic:kimi-war-room <topic>
+/kimatropic:kimi-reverse <path>
+/kimatropic:kimi-migrate <spec>
+```
+
+Both forms produce identical behavior — pick whichever feels more natural.
+
+### Usage Stats
+
+A `SubagentStop` hook logs every Kimi delegation to `~/.claude/kimatropic-usage.jsonl`. A `Stop` hook prints a one-line summary at the end of each session:
+
+```
+[kimatropic] 4 delegations this session (kimi-implementer=2, kimi-researcher=2) — 87,432 tokens, 312.6s wall
+```
+
+Disable with `KIMATROPIC_USAGE_SUMMARY=0` in your env.
+
+### Validator
+
+`agents/kimi-validator.md` is a read-only agent that lints the plugin: hook JSON, agent frontmatter, command frontmatter, plugin manifest, script shebangs. CI runs the same checks via `.github/workflows/validate.yml`.
+
+```
+Use the kimi-validator agent to check the plugin
+```
+
 ### Opt-Out
 
 - Say "do this yourself" or "don't use kimi" and Claude handles the work directly.

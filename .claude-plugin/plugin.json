@@ -1,9 +1,26 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "kimatropic",
-  "description": "Delegate tasks to Kimi K2.5 via subagents with lossy summary compression. Supports implementation, research, vision, swarm orchestration, and desktop automation delegation modes.",
-  "version": "0.3.0",
+  "description": "Delegate tasks to Kimi K2.5 via subagents with lossy summary compression. Supports implementation, research, vision, swarm orchestration, council debate, tmux operation, and 13 swarm applications (design, debug, war-room, test-storm, gauntlet, migrate, reverse, visual-diff, responsive, animation, flow-test, a11y, ux).",
+  "version": "0.4.0",
   "homepage": "https://github.com/brainnotincluded/kimatropic",
+  "repository": "https://github.com/brainnotincluded/kimatropic",
+  "bugs": "https://github.com/brainnotincluded/kimatropic/issues",
+  "license": "MIT",
+  "category": "orchestration",
+  "keywords": [
+    "kimi",
+    "k2.5",
+    "swarm",
+    "delegation",
+    "cost-optimization",
+    "multi-agent",
+    "orchestration",
+    "subagent",
+    "ralph-mode"
+  ],
   "author": {
-    "name": "Daniil"
+    "name": "Daniil",
+    "url": "https://github.com/brainnotincluded"
   }
 }

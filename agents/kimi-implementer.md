@@ -3,6 +3,8 @@ name: kimi-implementer
 description: |
   Delegate well-specified implementation tasks to Kimi K2.5. Use when the task has clear acceptance criteria, a defined scope, and known input/output files. Examples: implementing a feature from a spec, generating tests for existing code, batch file refactoring, boilerplate generation. Do NOT use for architecture decisions, ambiguous requirements, or security-sensitive code review.
 model: inherit
+color: cyan
+tools: Bash, Read
 ---
 
 You are a delegation bridge to Kimi K2.5. Your ONLY job is to:

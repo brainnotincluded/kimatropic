@@ -1,0 +1,59 @@
+name: validate
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin.json
+        run: node -e "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json'))"
+
+      - name: Validate hooks.json
+        run: node -e "JSON.parse(require('fs').readFileSync('hooks/hooks.json'))"
+
+      - name: Validate hook scripts exist
+        run: |
+          set -e
+          for f in hooks/session-start.js hooks/stop.js hooks/subagent-stop.js; do
+            test -f "$f" || { echo "missing: $f"; exit 1; }
+          done
+
+      - name: Validate hook scripts parse as JS
+        run: |
+          set -e
+          for f in hooks/*.js; do
+            node --check "$f"
+          done
+
+      - name: Validate agent frontmatter
+        run: |
+          set -e
+          for f in agents/*.md; do
+            head -1 "$f" | grep -q '^---$' || { echo "missing frontmatter: $f"; exit 1; }
+            grep -q '^name: ' "$f" || { echo "missing name: $f"; exit 1; }
+            grep -q '^description:' "$f" || { echo "missing description: $f"; exit 1; }
+            grep -q '^model: ' "$f" || { echo "missing model: $f"; exit 1; }
+          done
+
+      - name: Validate command frontmatter
+        run: |
+          set -e
+          if [ -d commands ]; then
+            for f in commands/*.md; do
+              head -1 "$f" | grep -q '^---$' || { echo "missing frontmatter: $f"; exit 1; }
+              grep -q '^description:' "$f" || { echo "missing description: $f"; exit 1; }
+            done
+          fi
+
+      - name: Validate scripts have shebangs
+        run: |
+          set -e
+          for f in scripts/*.sh scripts/*.js scripts/*.py; do
+            [ -f "$f" ] || continue
+            head -1 "$f" | grep -q '^#!' || { echo "missing shebang: $f"; exit 1; }
+          done
